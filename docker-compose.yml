@@ -1,5 +1,5 @@
 version: "3"
-services: 
+services:
 
   # Backend Service
   backend:
@@ -21,24 +21,18 @@ services:
     networks:
       - mariadb
 
-  # Frontend Service
-  frontend:
-    build: ./frontend
-    ports:
-      - "3001:3001"
-    networks:
-      - mariadb
-
   # Keycloak Service
   keycloak:
-    image: jboss/keycloak
+    image: quay.io/keycloak/keycloak:latest
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=h2
+      - KEYCLOAK_IMPORT=/tmp/keycloak_realm.json
     ports:
       - "8080:8080"
     volumes:
-      - ./keycloak/keycloak_config.json:/opt/jboss/keycloak/standalone/configuration/keycloak_config.json
+      - ./keycloak_realm.json:/tmp/keycloak_realm.json
     networks:
       - mariadb
 

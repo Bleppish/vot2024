@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+COPY keycloak.json /usr/src/app/keycloak.json
+
 EXPOSE 3000
 
 CMD ["node", "server.js"]

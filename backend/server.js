@@ -2,12 +2,16 @@ const express = require('express');
 const session = require('express-session');
 const Keycloak = require('keycloak-connect');
 const mariadb = require('mariadb');
+const path = require('path'); // Add path module
 
 // Create a session store
 const memoryStore = new session.MemoryStore();
 
+// Load Keycloak configuration
+const keycloakConfig = require('./keycloak.json'); // Adjust path if needed
+
 // Configure Keycloak
-const keycloak = new Keycloak({ store: memoryStore });
+const keycloak = new Keycloak({ store: memoryStore }, keycloakConfig); // Pass keycloakConfig here
 
 // Create Express app
 const app = express();
