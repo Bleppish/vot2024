@@ -2,59 +2,39 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend
+    build: ./backend
     ports:
       - "3000:3000"
     environment:
-      - DB_HOST=mariadb1
-      - DB_USER=root
-      - DB_PASSWORD=example
-      - DB_NAME=mydb
+      - KEYCLOAK_SERVER_URL=http://keycloak:8080/auth
+      - KEYCLOAK_REALM=myrealm
+      - KEYCLOAK_CLIENT_ID=myclient
+      - KEYCLOAK_SECRET=mysecret
     depends_on:
-      - mariadb1
+      - mariadb
+      - keycloak
 
   frontend:
-    build:
-      context: ./frontend
+    build: ./frontend
     ports:
       - "3001:3001"
 
-  mariadb1:
-    image: mariadb:10.5
+  mariadb:
+    image: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: mydb
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test
     ports:
       - "3306:3306"
-    volumes:
-      - mariadb1-data:/var/lib/mysql
-
-  mariadb2:
-    image: mariadb:10.5
-    environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: mydb
-    ports:
-      - "3307:3306"
-    volumes:
-      - mariadb2-data:/var/lib/mysql
+    deploy:
+      replicas: 1
 
   keycloak:
-    image: jboss/keycloak:latest
+    image: jboss/keycloak
     environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: mariadb1
-      DB_DATABASE: keycloak
-      DB_USER: root
-      DB_PASSWORD: example
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     ports:
       - "8080:8080"
-    depends_on:
-      - mariadb1
-
-volumes:
-  mariadb1-data:
-  mariadb2-data:
+    volumes:
+      - ./keycloak/keycloak_config.json:/opt/jboss/keycloak/standalone/configuration/keycloak_config.json

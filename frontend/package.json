@@ -1,9 +1,14 @@
 {
-    "name": "frontend",
-    "version": "1.0.0",
-    "main": "app.js",
-    "dependencies": {
-      "express": "^4.17.1"
-    }
-  }
-  
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend service for the sandwich shop",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

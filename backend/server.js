@@ -1,27 +1,48 @@
 const express = require('express');
+const session = require('express-session');
+const Keycloak = require('keycloak-connect');
 const mariadb = require('mariadb');
+
+// Create a session store
+const memoryStore = new session.MemoryStore();
+
+// Configure Keycloak
+const keycloak = new Keycloak({ store: memoryStore });
+
+// Create Express app
 const app = express();
-const port = 3000;
 
+// Use session
+app.use(session({
+  secret: 'mySecret',
+  resave: false,
+  saveUninitialized: true,
+  store: memoryStore
+}));
+
+// Use Keycloak middleware
+app.use(keycloak.middleware());
+
+// Database connection pool
 const pool = mariadb.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  connectionLimit: 5
+  host: 'mariadb', 
+  user: 'root', 
+  password: 'password', 
+  database: 'test'
 });
 
-app.get('/', async (req, res) => {
-  try {
-    const connection = await pool.getConnection();
-    const rows = await connection.query("SELECT 1 as val");
-    res.send(rows);
-    connection.end();
-  } catch (err) {
-    res.status(500).send(err.toString());
-  }
+// Unprotected route
+app.get('/', (req, res) => {
+  res.send('Hello, this is an unprotected route!');
 });
 
-app.listen(port, () => {
-  console.log(`Backend listening at http://localhost:${port}`);
+// Protected route
+app.get('/protected', keycloak.protect(), (req, res) => {
+  res.send('This is a protected route. You are authenticated!');
+});
+
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
