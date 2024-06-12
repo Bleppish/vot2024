@@ -1,0 +1,11 @@
+{
+  "realm": "myrealm",
+  "resource": "myclient",
+  "credentials": {
+    "secret": "mysecret"
+  },
+  "auth-server-url": "http://localhost:8080/auth",
+  "ssl-required": "none",
+  "bearer-only": true,
+  "use-resource-role-mappings": true
+}
