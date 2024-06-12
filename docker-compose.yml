@@ -1,0 +1,98 @@
+version: "3"
+services: 
+
+  # Backend Service
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - KEYCLOAK_SERVER_URL=http://keycloak:8080/auth
+      - KEYCLOAK_REALM=myrealm
+      - KEYCLOAK_CLIENT_ID=myclient
+      - KEYCLOAK_SECRET=mysecret
+      - DB_HOST=proxysql
+      - DB_USER=${MARIADB_USER_1}
+      - DB_PASSWORD=${MARIADB_PASSWORD_1}
+      - DB_NAME=${MARIADB_DATABASE_1}
+    depends_on:
+      - proxysql
+      - keycloak
+    networks:
+      - mariadb
+
+  # Frontend Service
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3001"
+    networks:
+      - mariadb
+
+  # Keycloak Service
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/keycloak_config.json:/opt/jboss/keycloak/standalone/configuration/keycloak_config.json
+    networks:
+      - mariadb
+
+  # MariaDB-1
+  mariadb1:
+    image: mariadb:10.5
+    container_name: mariadb1
+    ports:
+      - "3306:3306"
+    env_file: .env
+    environment:
+      - MARIADB_USER=${MARIADB_USER_1}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD_1}
+      - MARIADB_DATABASE=${MARIADB_DATABASE_1}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - ./mariadb1/galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+    cap_add:
+      - all
+    networks:
+      - mariadb
+
+  # MariaDB-2
+  mariadb2:
+    image: mariadb:10.5
+    container_name: mariadb2
+    ports:
+      - "3307:3306"
+    env_file: .env   
+    environment:
+      - MARIADB_USER=${MARIADB_USER_2}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD_2}
+      - MARIADB_DATABASE=${MARIADB_DATABASE_2}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - ./mariadb2/galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+    cap_add:
+      - all
+    networks:
+      - mariadb
+
+  # ProxySQL
+  proxysql: 
+    image: proxysql/proxysql:latest
+    container_name: proxysql
+    ports:
+      - "6032:6032"
+      - "6070:6070"
+      - "6080:6080"
+    cap_add:
+      - all
+    networks:
+      - mariadb
+
+networks:
+  mariadb:
+    driver: bridge
