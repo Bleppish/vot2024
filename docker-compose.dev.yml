@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=mariadb1
+      - DB_USER=root
+      - DB_PASSWORD=example
+      - DB_NAME=mydb
+    depends_on:
+      - mariadb1
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3001:3001"
+
+  mariadb1:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb1-data:/var/lib/mysql
+
+  mariadb2:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb2-data:/var/lib/mysql
+
+  keycloak:
+    image: jboss/keycloak:latest
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: mariadb1
+      DB_DATABASE: keycloak
+      DB_USER: root
+      DB_PASSWORD: example
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mariadb1
+
+volumes:
+  mariadb1-data:
+  mariadb2-data:
