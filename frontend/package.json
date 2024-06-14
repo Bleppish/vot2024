@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "Frontend service for the sandwich shop",
+  "description": "Napulno rabotesht frontend, i swear!",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"

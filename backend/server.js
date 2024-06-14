@@ -41,8 +41,16 @@ app.get('/', (req, res) => {
 });
 
 // Protected route
-app.get('/protected', keycloak.protect(), (req, res) => {
-  res.send('This is a protected route. You are authenticated!');
+app.get('/protected', keycloak.protect(), async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    // Perform some database query if needed
+    connection.release();
+    res.send('This is a protected route. You are authenticated!');
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 // Start the server

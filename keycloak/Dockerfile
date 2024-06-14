@@ -1,14 +1,14 @@
-FROM quay.io/keycloak/keycloak:latest
+FROM quay.io/keycloak/keycloak:21.1.1  
+
+# Set environment variables for Keycloak configuration
+ENV KEYCLOAK_ADMIN=admin
+ENV KEYCLOAK_ADMIN_PASSWORD=admin
 
 # Copy the realm configuration JSON to the container
-COPY keycloak_realm.json /tmp/keycloak_realm.json
+COPY keycloak_realm.json /opt/keycloak/data/import/
 
-# Import the realm configuration during container build
-RUN /opt/jboss/keycloak/bin/standalone.sh \
-    -Dkeycloak.migration.action=import \
-    -Dkeycloak.migration.provider=singleFile \
-    -Dkeycloak.migration.file=/tmp/keycloak_realm.json \
-    -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+# Expose the Keycloak port
+EXPOSE 8080
 
-# Start Keycloak and expose necessary ports
-CMD ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.upload_scripts=enabled"]
+# Start Keycloak and import the realm
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--import-realm"]

@@ -1,13 +1,12 @@
 version: "3"
 services:
-
   # Backend Service
   backend:
     build: ./backend
     ports:
       - "3000:3000"
     environment:
-      - KEYCLOAK_SERVER_URL=http://keycloak:8080/auth
+      - KEYCLOAK_SERVER_URL=http://keycloak:8080
       - KEYCLOAK_REALM=myrealm
       - KEYCLOAK_CLIENT_ID=myclient
       - KEYCLOAK_SECRET=mysecret
@@ -23,16 +22,12 @@ services:
 
   # Keycloak Service
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    build: ./keycloak
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - DB_VENDOR=h2
-      - KEYCLOAK_IMPORT=/tmp/keycloak_realm.json
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
       - "8080:8080"
-    volumes:
-      - ./keycloak_realm.json:/tmp/keycloak_realm.json
     networks:
       - mariadb
 

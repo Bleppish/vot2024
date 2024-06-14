@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Backend service for the sandwich shop",
+  "description": "Napulno rabotesht frontend, i swear!",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

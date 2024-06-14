@@ -1,11 +1,14 @@
 {
   "realm": "myrealm",
-  "resource": "myclient",
-  "credentials": {
-    "secret": "mysecret"
-  },
-  "auth-server-url": "http://localhost:8080/auth",
-  "ssl-required": "none",
-  "bearer-only": true,
-  "use-resource-role-mappings": true
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "myclient",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "mysecret",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["*"]
+    }
+  ]
 }
