@@ -40,7 +40,7 @@ services:
     env_file: .env
     environment:
       - MARIADB_USER=${MARIADB_USER_1}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD_1}
+      - MARIADB_PASSWORD=${MARIADB_USER_1}
       - MARIADB_DATABASE=${MARIADB_DATABASE_1}
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
     volumes:
@@ -59,7 +59,7 @@ services:
     env_file: .env   
     environment:
       - MARIADB_USER=${MARIADB_USER_2}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD_2}
+      - MARIADB_PASSWORD=${MARIADB_USER_2}
       - MARIADB_DATABASE=${MARIADB_DATABASE_2}
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
     volumes:
@@ -81,6 +81,16 @@ services:
       - all
     networks:
       - mariadb
+
+  # Frontend Service
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3001"
+    networks:
+      - mariadb
+    depends_on:
+      - backend
 
 networks:
   mariadb:
